@@ -996,15 +996,19 @@ Reset anual via cron 1º janeiro: `ALTER SEQUENCE order_public_seq RESTART WITH 
 - [ ] Routers públicos: produtos, produtores, categorias, cestas, pontos-coleta, zonas-entrega
 - [ ] Deploy Magalu VPS via Docker Compose + Caddy (db, api, web). Ver §12.
 
-### Fase 2 — Curadoria + Admin Básico (1-2 semanas) ✅
-- [x] Endpoints admin CRUD (catálogo, zonas, cestas) — `/api/admin/*`
-- [x] Endpoint `/cestas/{id}/curadoria-atual` (público)
-- [x] Painel admin em `app/(admin)/admin/*` — abrir curadoria, definir opções por slot, transitar status
+### Fase 2 — Curadoria + Admin Completo ✅
+- [x] **2A** Endpoints admin CRUD (catálogo, zonas, cestas) — `/api/admin/*` (39 endpoints)
+- [x] **2A** Endpoint `/cestas/{id}/curadoria-atual` (público)
+- [x] **2B** Painel admin: auth + sidebar + curadoria semanal completa
+- [x] **2C** CRUD UI de produtos, produtores, categorias, cestas (templates+slots), zonas (com bairros), pontos de coleta
 
-**Notas Fase 2B:**
-- Admin vive como route group dentro do mesmo Next.js app (não em `apps/admin/` separado), simplificando deploy e auth.
+**Notas:**
+- Admin vive como route group `app/(admin)/` dentro do mesmo Next.js app (não em `apps/admin/` separado), simplificando deploy e auth.
 - Auth bare httpOnly cookies (jose) — sem NextAuth ainda. NextAuth chega na Fase 3.
-- CRUD UI de catálogo/zonas/templates fica para Fase 2C (apenas curadoria + read-only de produtos no MVP da demo).
+- Padrão estabelecido para CRUDs: `actions.ts` + `_form.tsx` + `page.tsx` (list) + `novo/page.tsx` + `[id]/page.tsx`.
+- Server actions com `useActionState` para forms; `startTransition` para deletes.
+- Soft delete preserva histórico em produtos, produtores, zonas, pontos de coleta, templates.
+- Categorias têm apenas list/create/update (sem delete) por integridade FK.
 
 ### Fase 3 — Checkout + Integração FE (2-3 semanas)
 - [ ] BFF Next.js: route handlers proxy
