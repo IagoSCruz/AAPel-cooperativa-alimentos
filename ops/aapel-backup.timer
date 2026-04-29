@@ -1,0 +1,12 @@
+# systemd timer — runs aapel-backup.service daily at 03:00 UTC
+
+[Unit]
+Description=AAPel — daily backup timer
+
+[Timer]
+OnCalendar=*-*-* 03:00:00
+Persistent=true
+Unit=aapel-backup.service
+
+[Install]
+WantedBy=timers.target

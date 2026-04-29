@@ -1,0 +1,68 @@
+# ============================================================================
+# AAPel — Caddyfile (production reverse proxy + auto-TLS)
+# ============================================================================
+# Caddy obtains TLS certificates from Let's Encrypt automatically. nip.io
+# domains are fully supported (they resolve to the IP encoded in the name).
+#
+# Routing:
+#   /api/*       →  api:8000
+#   /health      →  api:8000  (also exposed for uptime checks)
+#   *            →  web:3000
+# ============================================================================
+
+{
+    email {$ACME_EMAIL}
+    # Logs to stdout so `docker compose logs caddy` shows them.
+    log {
+        output stdout
+        format console
+    }
+    # Servers section — HTTP/3 enabled by default in Caddy 2.6+
+    servers {
+        protocols h1 h2 h3
+    }
+}
+
+{$AAPEL_DOMAIN} {
+    encode zstd gzip
+
+    # Security headers (good baseline; tune per app)
+    header {
+        Strict-Transport-Security  "max-age=31536000; includeSubDomains"
+        X-Content-Type-Options     "nosniff"
+        X-Frame-Options            "DENY"
+        Referrer-Policy            "strict-origin-when-cross-origin"
+        Permissions-Policy         "geolocation=(), microphone=(), camera=()"
+        # Remove server fingerprinting
+        -Server
+    }
+
+    # API: route /api/* to FastAPI
+    handle /api/* {
+        reverse_proxy api:8000 {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Healthcheck endpoint of the API (uptime monitoring without auth)
+    handle /health {
+        reverse_proxy api:8000
+    }
+
+    # Everything else → Next.js
+    handle {
+        reverse_proxy web:3000 {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Access log to stdout
+    log {
+        output stdout
+        format console
+    }
+}

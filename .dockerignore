@@ -1,0 +1,62 @@
+# ============================================================================
+# .dockerignore — paths excluded from build context
+# ============================================================================
+# Build context is the project root. Skip what isn't needed at build time to
+# keep contexts small (faster transfers + fewer cache invalidations).
+# ============================================================================
+
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Editors / IDE
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Secrets & local env
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules
+.next
+out
+.turbo
+.pnpm-store
+
+# Python
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/.venv
+**/venv
+
+# Backend artifacts
+backend/_smoke_test.py
+backend/_check.sh
+
+# Docs (not needed at runtime)
+*.md
+!backend/README.md
+!database/README.md
+
+# Compose / ops files (not needed inside images)
+compose*.yaml
+docker-compose*.yaml
+ops/
+scripts/
+caddy/
+
+# Claude / Cowork session metadata
+.claude
+CLAUDE.md
+AGENTS.md

@@ -1,0 +1,23 @@
+# systemd unit — daily Postgres backup
+#
+# Install (alongside aapel-backup.timer):
+#   sudo cp ops/aapel-backup.{service,timer} /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now aapel-backup.timer
+#
+# Manual run:
+#   sudo systemctl start aapel-backup.service
+
+[Unit]
+Description=AAPel — Postgres backup
+After=docker.service aapel.service
+Wants=aapel.service
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/home/deploy/aapel
+ExecStart=/bin/bash /home/deploy/aapel/scripts/backup.sh
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=600

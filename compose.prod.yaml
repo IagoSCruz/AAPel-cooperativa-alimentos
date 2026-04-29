@@ -1,0 +1,63 @@
+# ============================================================================
+# AAPel — Docker Compose (production overrides)
+# ============================================================================
+# Adds:
+#   - `web` service (Next.js standalone)
+#   - `caddy` service (reverse proxy + auto-TLS)
+#   - Restart policies tightened
+#
+# Removes external port exposure for db/api/web — only Caddy listens publicly
+# on 80/443. Internal traffic flows over the compose network.
+#
+# Env vars are sourced by scripts/deploy.sh from /etc/aapel/secrets/*.env
+# before invoking compose. See ARCHITECTURE.md §12.
+# ============================================================================
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+      target: runtime
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://localhost}
+      INTERNAL_API_URL: http://api:8000
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2-alpine
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"   # HTTP/3
+    environment:
+      AAPEL_DOMAIN: "${AAPEL_DOMAIN:?AAPEL_DOMAIN required - eg 1-2-3-4.nip.io}"
+      ACME_EMAIL: "${ACME_EMAIL:-admin@example.com}"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+    name: aapel_caddy_data
+  caddy_config:
+    name: aapel_caddy_config

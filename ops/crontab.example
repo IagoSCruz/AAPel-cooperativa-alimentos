@@ -1,0 +1,6 @@
+# Alternative to the systemd timer — install with `sudo crontab -e` if you
+# prefer plain cron. The systemd unit (ops/aapel-backup.timer) is preferred
+# (better logs via journalctl).
+
+# m h  dom mon dow   command
+  0 3   *   *   *    /home/deploy/aapel/scripts/backup.sh >> /var/log/aapel-backup.log 2>&1

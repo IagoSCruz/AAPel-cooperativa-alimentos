@@ -1,9 +1,13 @@
+/**
+ * Root layout — minimal chrome shared by ALL routes (shop and admin).
+ *
+ * Header/Footer/CartProvider are scoped to the (shop) route group; admin
+ * routes have their own layout under (admin)/admin/(panel)/layout.tsx.
+ */
+
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Header } from "@/components/layout/header";
-import { Footer } from "@/components/layout/footer";
-import { CartProvider } from "@/contexts/cart-context";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,13 +48,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased`}
       >
-        <CartProvider>
-          <div className="flex min-h-screen flex-col">
-            <Header />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </div>
-        </CartProvider>
+        {children}
       </body>
     </html>
   );

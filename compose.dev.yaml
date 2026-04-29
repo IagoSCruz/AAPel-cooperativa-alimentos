@@ -1,0 +1,26 @@
+# ============================================================================
+# AAPel — Docker Compose (development overrides)
+# ============================================================================
+# Adds:
+#   - Port exposure (db:5432, api:8000) for direct access from host
+#   - Bind mount of backend source for FastAPI hot reload (--reload)
+#   - DEBUG=true
+#
+# DOES NOT include the Next.js `web` service. In dev, run the frontend
+# natively from the host with `pnpm dev` for fast HMR. The frontend reaches
+# the api at http://localhost:8000.
+# ============================================================================
+
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  api:
+    volumes:
+      - ./backend/app:/app/app
+    environment:
+      DEBUG: "true"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    ports:
+      - "8000:8000"
