@@ -6,7 +6,18 @@
  */
 
 import Link from "next/link";
-import { Calendar, LayoutDashboard, Leaf, LogOut } from "lucide-react";
+import {
+  Apple,
+  Calendar,
+  LayoutDashboard,
+  Leaf,
+  LogOut,
+  MapPin,
+  Package,
+  Sprout,
+  Tags,
+  Truck,
+} from "lucide-react";
 
 import { requireAdmin } from "@/lib/session";
 import { logoutAction } from "../login/actions";
@@ -38,6 +49,26 @@ export default async function AdminPanelLayout({
           </NavItem>
           <NavItem href="/admin/curadorias" icon={Calendar}>
             Curadorias
+          </NavItem>
+          <NavSection label="Catálogo" />
+          <NavItem href="/admin/produtos" icon={Apple}>
+            Produtos
+          </NavItem>
+          <NavItem href="/admin/produtores" icon={Sprout}>
+            Produtores
+          </NavItem>
+          <NavItem href="/admin/categorias" icon={Tags}>
+            Categorias
+          </NavItem>
+          <NavItem href="/admin/cestas" icon={Package}>
+            Cestas
+          </NavItem>
+          <NavSection label="Logística" />
+          <NavItem href="/admin/zonas-entrega" icon={Truck}>
+            Zonas de entrega
+          </NavItem>
+          <NavItem href="/admin/pontos-coleta" icon={MapPin}>
+            Pontos de coleta
           </NavItem>
         </nav>
 
@@ -77,5 +108,13 @@ function NavItem({
       <Icon className="h-4 w-4" />
       {children}
     </Link>
+  );
+}
+
+function NavSection({ label }: { label: string }) {
+  return (
+    <p className="mt-4 px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+      {label}
+    </p>
   );
 }
