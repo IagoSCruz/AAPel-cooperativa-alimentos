@@ -1,20 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState } from "react";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { registerAction, type RegisterState } from "./actions";
+
+const initialState: RegisterState = { error: null };
 
 export default function CadastroPage() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Simulate signup
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    window.location.href = "/conta";
-  };
+  const [state, action, isPending] = useActionState(registerAction, initialState);
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
@@ -35,7 +30,16 @@ export default function CadastroPage() {
           Junte-se à nossa comunidade de consumidores conscientes
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+        <form action={action} className="mt-8 space-y-5">
+          {state.error && (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
+              {state.error}
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="name"
@@ -48,6 +52,7 @@ export default function CadastroPage() {
               id="name"
               name="name"
               required
+              autoComplete="name"
               className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Seu nome"
             />
@@ -65,6 +70,7 @@ export default function CadastroPage() {
               id="email"
               name="email"
               required
+              autoComplete="email"
               className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="seu@email.com"
             />
@@ -75,13 +81,13 @@ export default function CadastroPage() {
               htmlFor="phone"
               className="block text-sm font-medium text-foreground"
             >
-              Telefone
+              Telefone <span className="text-muted-foreground">(opcional)</span>
             </label>
             <input
               type="tel"
               id="phone"
               name="phone"
-              required
+              autoComplete="tel"
               className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="(00) 00000-0000"
             />
@@ -100,37 +106,88 @@ export default function CadastroPage() {
               name="password"
               required
               minLength={8}
+              autoComplete="new-password"
               className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Mínimo 8 caracteres"
             />
           </div>
 
-          <div className="flex items-start gap-3">
-            <input
-              type="checkbox"
-              id="terms"
-              required
-              className="mt-1 h-4 w-4 accent-primary"
-            />
-            <label htmlFor="terms" className="text-sm text-muted-foreground">
-              Li e aceito os{" "}
-              <Link href="/termos" className="text-primary hover:underline">
-                termos de uso
-              </Link>{" "}
-              e a{" "}
-              <Link href="/privacidade" className="text-primary hover:underline">
-                política de privacidade
-              </Link>
-            </label>
+          {/* LGPD consents */}
+          <div className="rounded-lg border border-border bg-secondary/30 p-4 space-y-3">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+              Consentimentos (LGPD)
+            </p>
+
+            {/* Obrigatórios */}
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="consent_terms"
+                name="consent_terms"
+                required
+                className="mt-1 h-4 w-4 accent-primary"
+              />
+              <label htmlFor="consent_terms" className="text-sm text-foreground">
+                Li e aceito os{" "}
+                <Link href="/termos" className="text-primary hover:underline">
+                  termos de uso
+                </Link>{" "}
+                <span className="text-destructive">*</span>
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="consent_privacy"
+                name="consent_privacy"
+                required
+                className="mt-1 h-4 w-4 accent-primary"
+              />
+              <label htmlFor="consent_privacy" className="text-sm text-foreground">
+                Li e aceito a{" "}
+                <Link href="/privacidade" className="text-primary hover:underline">
+                  política de privacidade
+                </Link>{" "}
+                <span className="text-destructive">*</span>
+              </label>
+            </div>
+
+            {/* Opcionais */}
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="consent_marketing"
+                name="consent_marketing"
+                defaultChecked
+                className="mt-1 h-4 w-4 accent-primary"
+              />
+              <label htmlFor="consent_marketing" className="text-sm text-muted-foreground">
+                Quero receber novidades, promoções e curadoria semanal por e-mail
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <input
+                type="checkbox"
+                id="consent_analytics"
+                name="consent_analytics"
+                defaultChecked
+                className="mt-1 h-4 w-4 accent-primary"
+              />
+              <label htmlFor="consent_analytics" className="text-sm text-muted-foreground">
+                Aceito o uso de dados para melhoria da experiência no site
+              </label>
+            </div>
           </div>
 
           <Button
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isLoading}
+            disabled={isPending}
           >
-            {isLoading ? "Criando conta..." : "Criar conta"}
+            {isPending ? "Criando conta..." : "Criar conta"}
           </Button>
         </form>
 

@@ -8,12 +8,14 @@ The `product_type = FOOD` constraint relevant to baskets is enforced at DB
 level via CHECK on `basket_curation_slot_options`.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func
 from sqlmodel import select
+
+from app.utils import utcnow_naive
 
 from app.dependencies import DbSession
 from app.exceptions import BadRequest, NotFound
@@ -29,9 +31,6 @@ from app.schemas.pagination import Page, PageMeta, PageQuery
 
 router = APIRouter()
 
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 def _to_response(product: Product, category: Category, producer: Producer) -> ProductResponse:
@@ -178,7 +177,7 @@ async def update_product(
 
     for field, value in updates.items():
         setattr(product, field, value)
-    product.updated_at = _utcnow()
+    product.updated_at = utcnow_naive()
 
     await db.commit()
     await db.refresh(product)
@@ -198,9 +197,9 @@ async def delete_product(product_id: UUID, db: DbSession) -> None:
     if product is None or product.deleted_at is not None:
         raise NotFound("Produto não encontrado")
 
-    product.deleted_at = _utcnow()
+    product.deleted_at = utcnow_naive()
     product.available = False
-    product.updated_at = _utcnow()
+    product.updated_at = utcnow_naive()
 
     await db.commit()
     return None

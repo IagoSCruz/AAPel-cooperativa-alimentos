@@ -34,3 +34,28 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Caches and temp files
+.cache
+.temp
+.tmp
+.tempfiles
+.tempfiles.*
+.tempfiles.*.*
+.tempfiles.*.*.*
+.tempfiles.*.*.*.*
+.tempfiles.*.*.*.*.*
+.tempfiles.*.*.*.*.*.*
+*__pycache__*
+*__pycache__*.*
+*__pycache__*.*.*
+*__pycache__*.*.*.*
+*__pycache__*.*.*.*.*
+*__pycache__*.*.*.*.*.*
+*__pycache__*.*.*.*.*.*.*
+*__pycache__*.*.*.*.*.*.*.*
+*__pycache__*.*.*.*.*.*.*.*.*
+*__pycache__*.*.*.*.*.*.*.*.*.*
+*__pycache__*.*.*.*.*.*.*.*.*.*.*
+*__pycache__*.*.*.*.*.*.*.*.*.*.*.*

@@ -1,14 +1,21 @@
 """Order models: Order, OrderItem, BasketFulfillment."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
+from app.utils import utcnow_naive
+from app.models._enums_sql import (
+    DELIVERY_METHOD,
+    LINE_TYPE,
+    ORDER_STATUS,
+    PAYMENT_METHOD,
+    PAYMENT_STATUS,
+    CHOSEN_BY,
+)
 
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 class Order(SQLModel, table=True):
@@ -16,11 +23,12 @@ class Order(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     public_id: str = Field(max_length=20, unique=True)
-    status: str = Field(default="PENDING", max_length=30)
+    # pgEnum columns — see app.models._enums_sql for the rationale.
+    status: str = Field(default="PENDING", sa_type=ORDER_STATUS)
 
     customer_id: UUID = Field(foreign_key="users.id")
 
-    delivery_method: str = Field(max_length=20)
+    delivery_method: str = Field(sa_type=DELIVERY_METHOD)
     delivery_date: datetime
 
     delivery_zone_id: UUID | None = Field(default=None, foreign_key="delivery_zones.id")
@@ -30,16 +38,16 @@ class Order(SQLModel, table=True):
 
     collection_point_id: UUID | None = Field(default=None, foreign_key="collection_points.id")
 
-    payment_method: str = Field(max_length=10)
-    payment_status: str = Field(default="PENDING", max_length=20)
+    payment_method: str = Field(sa_type=PAYMENT_METHOD)
+    payment_status: str = Field(default="PENDING", sa_type=PAYMENT_STATUS)
 
     subtotal: Decimal = Field(max_digits=10, decimal_places=2)
     delivery_fee: Decimal = Field(default=Decimal("0"), max_digits=10, decimal_places=2)
     total_amount: Decimal = Field(max_digits=10, decimal_places=2)
 
     notes: str | None = None
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)
 
 
 class OrderItem(SQLModel, table=True):
@@ -47,7 +55,7 @@ class OrderItem(SQLModel, table=True):
 
     id: UUID = Field(default_factory=uuid4, primary_key=True)
     order_id: UUID = Field(foreign_key="orders.id")
-    line_type: str = Field(max_length=10)
+    line_type: str = Field(sa_type=LINE_TYPE)
 
     # if PRODUCT
     product_id: UUID | None = Field(default=None, foreign_key="products.id")
@@ -63,7 +71,7 @@ class OrderItem(SQLModel, table=True):
     upgrade_total: Decimal = Field(default=Decimal("0"), max_digits=10, decimal_places=2)
     line_total: Decimal = Field(max_digits=10, decimal_places=2)
 
-    created_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
 
 
 class BasketFulfillment(SQLModel, table=True):
@@ -77,8 +85,8 @@ class BasketFulfillment(SQLModel, table=True):
 
     upgrade_fee_paid: Decimal = Field(default=Decimal("0"), max_digits=10, decimal_places=2)
 
-    chosen_by: str = Field(max_length=10)
+    chosen_by: str = Field(sa_type=CHOSEN_BY)
     substituted_from_id: UUID | None = Field(default=None, foreign_key="products.id")
     substitution_reason: str | None = None
 
-    created_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)

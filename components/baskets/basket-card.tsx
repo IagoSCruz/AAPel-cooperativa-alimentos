@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { Check, Users, Calendar } from "lucide-react";
+import { Users, ArrowRight, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { formatCurrency } from "@/lib/utils";
-import type { Basket } from "@/lib/data";
+import { formatPrice } from "@/lib/utils";
+import type { BasketTemplate } from "@/lib/types";
+import { SafeImage } from "@/components/ui/safe-image";
 
 interface BasketCardProps {
-  basket: Basket;
+  basket: BasketTemplate;
   featured?: boolean;
 }
 
@@ -26,17 +27,16 @@ export function BasketCard({ basket, featured = false }: BasketCardProps) {
 
       {/* Image */}
       <div className="relative h-48 overflow-hidden bg-muted">
-        <img
-          src={basket.image}
-          alt={basket.name}
-          className="h-full w-full object-cover"
-        />
+        {basket.image_url ? (
+          <SafeImage
+            src={basket.image_url}
+            alt={basket.name}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full bg-secondary" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-        <div className="absolute bottom-4 left-4">
-          <span className="rounded-full bg-white/90 px-3 py-1 text-sm font-medium text-foreground">
-            {basket.frequency}
-          </span>
-        </div>
       </div>
 
       {/* Content */}
@@ -49,32 +49,49 @@ export function BasketCard({ basket, featured = false }: BasketCardProps) {
         </p>
 
         {/* Serves */}
-        <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-          <Users className="h-4 w-4" />
-          <span>Serve {basket.serves}</span>
-        </div>
+        {basket.serves && (
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <Users className="h-4 w-4" />
+            <span>Serve {basket.serves}</span>
+          </div>
+        )}
 
-        {/* Items */}
-        <ul className="mt-4 space-y-2">
-          {basket.items.map((item, index) => (
-            <li
-              key={index}
-              className="flex items-center gap-2 text-sm text-foreground"
-            >
-              <Check className="h-4 w-4 text-accent" />
-              {item}
-            </li>
-          ))}
-        </ul>
+        {/* Slots */}
+        {basket.slots.length > 0 && (
+          <ul className="mt-4 space-y-2">
+            {basket.slots.slice(0, 5).map((slot) => (
+              <li
+                key={slot.id}
+                className="flex items-center gap-2 text-sm text-foreground"
+              >
+                <Package className="h-4 w-4 text-accent" />
+                <span>
+                  {slot.slot_label}
+                  <span className="ml-1 text-xs text-muted-foreground">
+                    ({slot.item_count} {slot.item_count === 1 ? "item" : "itens"})
+                  </span>
+                </span>
+              </li>
+            ))}
+            {basket.slots.length > 5 && (
+              <li className="text-xs text-muted-foreground">
+                + {basket.slots.length - 5} compartimentos
+              </li>
+            )}
+          </ul>
+        )}
 
         {/* Price */}
         <div className="mt-6 border-t border-border pt-6">
           <div className="flex items-baseline gap-1">
             <span className="text-3xl font-bold text-foreground">
-              {formatCurrency(basket.price)}
+              {formatPrice(basket.base_price)}
             </span>
             <span className="text-muted-foreground">/semana</span>
           </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Curadoria semanal de produtos frescos
+          </p>
         </div>
 
         {/* CTA */}
@@ -84,7 +101,10 @@ export function BasketCard({ basket, featured = false }: BasketCardProps) {
           variant={featured ? "primary" : "outline"}
           asChild
         >
-          <Link href={`/cestas/${basket.id}`}>Assinar esta cesta</Link>
+          <Link href={`/cestas/${basket.id}`} className="flex items-center gap-2">
+            Montar minha cesta
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </Button>
       </div>
     </div>

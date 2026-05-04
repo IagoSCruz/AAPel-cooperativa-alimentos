@@ -1,14 +1,13 @@
 """Logistics models: DeliveryZone, DeliveryZoneNeighborhood, CollectionPoint."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
+from app.utils import utcnow_naive
 
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 class DeliveryZone(SQLModel, table=True):
@@ -22,8 +21,8 @@ class DeliveryZone(SQLModel, table=True):
     estimated_minutes: int | None = None
     active: bool = Field(default=True)
     deleted_at: datetime | None = None
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)
 
 
 class DeliveryZoneNeighborhood(SQLModel, table=True):
@@ -46,5 +45,5 @@ class CollectionPoint(SQLModel, table=True):
     schedule: str | None = Field(default=None, max_length=255)
     active: bool = Field(default=True)
     deleted_at: datetime | None = None
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)

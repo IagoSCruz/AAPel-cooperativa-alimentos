@@ -1,11 +1,13 @@
 """Admin CRUD: collection points (pickup locations)."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func
 from sqlmodel import select
+
+from app.utils import utcnow_naive
 
 from app.dependencies import DbSession
 from app.exceptions import NotFound
@@ -19,9 +21,6 @@ from app.schemas.pagination import Page, PageMeta, PageQuery
 
 router = APIRouter()
 
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 @router.get(
@@ -109,7 +108,7 @@ async def update_collection_point(
     updates = payload.model_dump(exclude_unset=True)
     for field, value in updates.items():
         setattr(point, field, value)
-    point.updated_at = _utcnow()
+    point.updated_at = utcnow_naive()
 
     await db.commit()
     await db.refresh(point)
@@ -126,9 +125,9 @@ async def delete_collection_point(point_id: UUID, db: DbSession) -> None:
     if point is None or point.deleted_at is not None:
         raise NotFound("Ponto de coleta não encontrado")
 
-    point.deleted_at = _utcnow()
+    point.deleted_at = utcnow_naive()
     point.active = False
-    point.updated_at = _utcnow()
+    point.updated_at = utcnow_naive()
 
     await db.commit()
     return None

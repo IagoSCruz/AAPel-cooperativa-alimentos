@@ -4,37 +4,31 @@ import Link from "next/link";
 import { Plus, Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/cart-context";
-import { formatCurrency } from "@/lib/utils";
-import type { Product } from "@/lib/data";
+import { formatPrice } from "@/lib/utils";
+import type { ProductItem } from "@/lib/types";
+import { SafeImage } from "@/components/ui/safe-image";
 
 interface ProductCardProps {
-  product: Product;
+  product: ProductItem;
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { addItem } = useCart();
-
-  const handleAddToCart = () => {
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      unit: product.unit,
-      image: product.image,
-      producerId: product.producer.id,
-      producerName: product.producer.name,
-    });
-  };
+  const { addItem, canAddMore } = useCart();
+  const reachedStockCap = !canAddMore(product);
 
   return (
     <div className="group overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md">
       <Link href={`/produtos/${product.id}`} className="block">
         <div className="relative aspect-square overflow-hidden bg-muted">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
+          {product.image_url ? (
+            <SafeImage
+              src={product.image_url}
+              alt={product.name}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            />
+          ) : (
+            <div className="h-full w-full bg-secondary" />
+          )}
           {product.organic && (
             <div className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-accent px-2 py-1 text-xs font-medium text-accent-foreground">
               <Leaf className="h-3 w-3" />
@@ -67,7 +61,7 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="mt-4 flex items-center justify-between">
           <div>
             <span className="text-lg font-bold text-foreground">
-              {formatCurrency(product.price)}
+              {formatPrice(product.price)}
             </span>
             <span className="text-sm text-muted-foreground">
               /{product.unit}
@@ -75,12 +69,16 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
           <Button
             size="sm"
-            onClick={handleAddToCart}
-            disabled={!product.available}
-            aria-label={`Adicionar ${product.name} ao carrinho`}
+            onClick={() => addItem(product)}
+            disabled={!product.available || product.stock === 0 || reachedStockCap}
+            aria-label={
+              reachedStockCap
+                ? `${product.name}: limite de estoque atingido no carrinho`
+                : `Adicionar ${product.name} ao carrinho`
+            }
           >
             <Plus className="h-4 w-4" />
-            Adicionar
+            {reachedStockCap ? "No carrinho" : "Adicionar"}
           </Button>
         </div>
       </div>

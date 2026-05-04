@@ -1,13 +1,13 @@
 """User + Consent History models."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
+from app.utils import utcnow_naive
+from app.models._enums_sql import USER_ROLE
 
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 class User(SQLModel, table=True):
@@ -17,7 +17,9 @@ class User(SQLModel, table=True):
     email: str = Field(max_length=255, unique=True, index=True)
     name: str = Field(max_length=255)
     password_hash: str
-    role: str = Field(default="CUSTOMER", max_length=20)
+    # pgEnum: see _enums_sql.py — without sa_type, asyncpg sends $N::VARCHAR
+    # which Postgres can't compare/insert into a `user_role` column.
+    role: str = Field(default="CUSTOMER", sa_type=USER_ROLE)
     phone: str | None = Field(default=None, max_length=20)
 
     # LGPD
@@ -27,8 +29,8 @@ class User(SQLModel, table=True):
     deleted_at: datetime | None = Field(default=None)
     anonymized_at: datetime | None = Field(default=None)
 
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)
 
     @property
     def is_active(self) -> bool:

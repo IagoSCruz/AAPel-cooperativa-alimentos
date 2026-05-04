@@ -1,20 +1,24 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useActionState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { loginAction, type LoginState } from "./actions";
+
+const initialState: LoginState = { error: null };
 
 export default function LoginPage() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    // Simulate login
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    window.location.href = "/conta";
-  };
+  const [state, action, isPending] = useActionState(loginAction, initialState);
+  const searchParams = useSearchParams();
+  const rawNext = searchParams.get("next");
+  // Only forward same-origin paths — server action revalidates, but we clean
+  // the input here so users see the safe value in the URL.
+  const next =
+    rawNext && rawNext.startsWith("/") && !rawNext.startsWith("//") && !rawNext.startsWith("/\\")
+      ? rawNext
+      : "/conta";
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center px-4 py-12">
@@ -35,7 +39,19 @@ export default function LoginPage() {
           Acesse seus pedidos e gerencie sua assinatura
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+        <form action={action} className="mt-8 space-y-6">
+          {/* Hidden: pass ?next redirect through the form */}
+          <input type="hidden" name="next" value={next} />
+
+          {state.error && (
+            <div
+              role="alert"
+              className="rounded-lg border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+            >
+              {state.error}
+            </div>
+          )}
+
           <div>
             <label
               htmlFor="email"
@@ -48,6 +64,7 @@ export default function LoginPage() {
               id="email"
               name="email"
               required
+              autoComplete="email"
               className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="seu@email.com"
             />
@@ -73,6 +90,7 @@ export default function LoginPage() {
               id="password"
               name="password"
               required
+              autoComplete="current-password"
               className="mt-1.5 w-full rounded-lg border border-input bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               placeholder="Sua senha"
             />
@@ -82,9 +100,9 @@ export default function LoginPage() {
             type="submit"
             className="w-full"
             size="lg"
-            disabled={isLoading}
+            disabled={isPending}
           >
-            {isLoading ? "Entrando..." : "Entrar"}
+            {isPending ? "Entrando..." : "Entrar"}
           </Button>
         </form>
 

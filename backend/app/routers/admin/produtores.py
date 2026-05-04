@@ -5,12 +5,14 @@ manages everything). Soft-delete preserves order history when a producer leaves
 the cooperative.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func
 from sqlmodel import select
+
+from app.utils import utcnow_naive
 
 from app.dependencies import DbSession
 from app.exceptions import NotFound
@@ -20,9 +22,6 @@ from app.schemas.pagination import Page, PageMeta, PageQuery
 
 router = APIRouter()
 
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 @router.get(
@@ -107,7 +106,7 @@ async def update_producer(
     updates = payload.model_dump(exclude_unset=True)
     for field, value in updates.items():
         setattr(producer, field, value)
-    producer.updated_at = _utcnow()
+    producer.updated_at = utcnow_naive()
 
     await db.commit()
     await db.refresh(producer)
@@ -124,9 +123,9 @@ async def delete_producer(producer_id: UUID, db: DbSession) -> None:
     if producer is None or producer.deleted_at is not None:
         raise NotFound("Produtor não encontrado")
 
-    producer.deleted_at = _utcnow()
+    producer.deleted_at = utcnow_naive()
     producer.active = False
-    producer.updated_at = _utcnow()
+    producer.updated_at = utcnow_naive()
 
     await db.commit()
     return None

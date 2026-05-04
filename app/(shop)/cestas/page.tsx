@@ -1,6 +1,7 @@
-import { baskets } from "@/lib/data";
 import { BasketCard } from "@/components/baskets/basket-card";
+import { publicFetch } from "@/lib/api-public";
 import { Repeat, Truck, Leaf, Calendar } from "lucide-react";
+import type { BasketTemplate } from "@/lib/types";
 
 const benefits = [
   {
@@ -15,7 +16,7 @@ const benefits = [
   },
   {
     icon: Truck,
-    title: "Frete grátis",
+    title: "Frete incluso",
     description: "Assinantes não pagam taxa de entrega em nenhum pedido",
   },
   {
@@ -33,8 +34,8 @@ const steps = [
   },
   {
     number: "2",
-    title: "Defina a frequência",
-    description: "Semanal, quinzenal ou mensal - você decide",
+    title: "Personalize os slots",
+    description: "Cada semana você vê e aprova o que vai na sua cesta",
   },
   {
     number: "3",
@@ -43,7 +44,11 @@ const steps = [
   },
 ];
 
-export default function CestasPage() {
+export default async function CestasPage() {
+  const baskets = await publicFetch<BasketTemplate[]>("/api/cestas", {
+    revalidate: 3600,
+  });
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -100,6 +105,12 @@ export default function CestasPage() {
               />
             ))}
           </div>
+
+          {baskets.length === 0 && (
+            <p className="mt-12 text-center text-muted-foreground">
+              Nenhuma cesta disponível no momento. Volte em breve!
+            </p>
+          )}
         </div>
       </section>
 
@@ -146,58 +157,32 @@ export default function CestasPage() {
           </div>
 
           <div className="mt-12 space-y-4">
-            <details className="group rounded-xl border border-border bg-card">
-              <summary className="flex cursor-pointer items-center justify-between p-6 font-medium text-foreground">
-                Posso cancelar a qualquer momento?
-                <span className="transition-transform group-open:rotate-180">
-                  +
-                </span>
-              </summary>
-              <p className="px-6 pb-6 text-muted-foreground">
-                Sim! Não há fidelidade. Você pode pausar, pular semanas ou
-                cancelar sua assinatura a qualquer momento pelo seu painel.
-              </p>
-            </details>
-
-            <details className="group rounded-xl border border-border bg-card">
-              <summary className="flex cursor-pointer items-center justify-between p-6 font-medium text-foreground">
-                Como escolho os produtos da minha cesta?
-                <span className="transition-transform group-open:rotate-180">
-                  +
-                </span>
-              </summary>
-              <p className="px-6 pb-6 text-muted-foreground">
-                Nossos agricultores selecionam os melhores produtos da semana
-                com base na sazonalidade. Você sempre recebe o que há de mais
-                fresco.
-              </p>
-            </details>
-
-            <details className="group rounded-xl border border-border bg-card">
-              <summary className="flex cursor-pointer items-center justify-between p-6 font-medium text-foreground">
-                Em quais dias ocorre a entrega?
-                <span className="transition-transform group-open:rotate-180">
-                  +
-                </span>
-              </summary>
-              <p className="px-6 pb-6 text-muted-foreground">
-                As entregas acontecem às terças e sextas-feiras. Você escolhe o
-                dia mais conveniente no momento da assinatura.
-              </p>
-            </details>
-
-            <details className="group rounded-xl border border-border bg-card">
-              <summary className="flex cursor-pointer items-center justify-between p-6 font-medium text-foreground">
-                Posso adicionar produtos avulsos?
-                <span className="transition-transform group-open:rotate-180">
-                  +
-                </span>
-              </summary>
-              <p className="px-6 pb-6 text-muted-foreground">
-                Claro! Assinantes podem adicionar produtos extras do nosso
-                catálogo à entrega da cesta, sem pagar frete adicional.
-              </p>
-            </details>
+            {[
+              {
+                q: "Posso cancelar a qualquer momento?",
+                a: "Sim! Não há fidelidade. Você pode pausar, pular semanas ou cancelar sua assinatura a qualquer momento pelo seu painel.",
+              },
+              {
+                q: "Como escolho os produtos da minha cesta?",
+                a: "Cada semana antes do prazo de curadoria você pode ver os produtos disponíveis por slot e aprovar ou solicitar substituições.",
+              },
+              {
+                q: "Em quais dias ocorre a entrega?",
+                a: "As entregas acontecem às terças e sextas-feiras. Você escolhe o dia mais conveniente no momento da assinatura.",
+              },
+              {
+                q: "Posso adicionar produtos avulsos?",
+                a: "Claro! Assinantes podem adicionar produtos extras do nosso catálogo à entrega da cesta, sem pagar frete adicional.",
+              },
+            ].map(({ q, a }) => (
+              <details key={q} className="group rounded-xl border border-border bg-card">
+                <summary className="flex cursor-pointer items-center justify-between p-6 font-medium text-foreground">
+                  {q}
+                  <span className="transition-transform group-open:rotate-180">+</span>
+                </summary>
+                <p className="px-6 pb-6 text-muted-foreground">{a}</p>
+              </details>
+            ))}
           </div>
         </div>
       </section>

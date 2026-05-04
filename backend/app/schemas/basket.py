@@ -6,7 +6,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, field_serializer
 
-from app.models.enums import CurationStatus
+from app.models.enums import CurationStatus, DeliveryMethod, PaymentMethod
 from app.schemas.catalog import ProductResponse
 
 
@@ -138,3 +138,55 @@ class SetCurationOptionsRequest(BaseModel):
     """Bulk replace of all options for a curation."""
 
     options: list[BasketCurationOptionInput]
+
+
+# ---------------------------------------------------------------------------
+# Customer basket order DTOs
+# ---------------------------------------------------------------------------
+
+
+class SlotChoiceInput(BaseModel):
+    slot_id: UUID
+    product_id: UUID
+
+
+class BasketOrderRequest(BaseModel):
+    # C1: bounded list — max 20 prevents O(N) DoS from oversized payloads
+    slot_choices: list[SlotChoiceInput] = _Field(min_length=1, max_length=20)
+    # H5: enum types give Pydantic-level validation before reaching handler logic
+    delivery_method: DeliveryMethod
+    delivery_zone_id: UUID | None = None
+    delivery_address: str | None = _Field(default=None, max_length=500)
+    delivery_neighborhood: str | None = _Field(default=None, max_length=255)
+    collection_point_id: UUID | None = None
+    payment_method: PaymentMethod
+    # C2: notes must be bounded — TEXT column otherwise accepts unlimited input
+    notes: str | None = _Field(default=None, max_length=1000)
+
+
+class BasketFulfillmentResponse(BaseModel):
+    slot_id: UUID
+    slot_label: str
+    product_id: UUID
+    product_name: str
+    upgrade_fee_paid: Decimal
+
+    @field_serializer('upgrade_fee_paid')
+    def _ser_fee(self, v: Decimal) -> str:
+        return f'{v:.2f}'
+
+
+class BasketOrderResponse(BaseModel):
+    order_id: UUID
+    public_id: str
+    status: str
+    delivery_week: date
+    base_price: Decimal
+    upgrade_total: Decimal
+    delivery_fee: Decimal
+    total_amount: Decimal
+    fulfillments: list[BasketFulfillmentResponse]
+
+    @field_serializer('base_price', 'upgrade_total', 'delivery_fee', 'total_amount')
+    def _ser_money(self, v: Decimal) -> str:
+        return f'{v:.2f}'

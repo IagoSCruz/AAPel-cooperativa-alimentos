@@ -9,13 +9,15 @@ REPLACES the existing associations. Conflicts (a neighborhood already used by
 another zone) raise 409.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func
 from sqlmodel import select
+
+from app.utils import utcnow_naive
 
 from app.dependencies import DbSession
 from app.exceptions import Conflict, NotFound
@@ -29,9 +31,6 @@ from app.schemas.pagination import Page, PageMeta, PageQuery
 
 router = APIRouter()
 
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 async def _zone_neighborhoods(db, zone_id: UUID) -> list[str]:
@@ -201,7 +200,7 @@ async def update_zone(
 
     for field, value in updates.items():
         setattr(zone, field, value)
-    zone.updated_at = _utcnow()
+    zone.updated_at = utcnow_naive()
 
     if neighborhoods is not None:
         await _set_neighborhoods(db, zone.id, neighborhoods)
@@ -224,9 +223,9 @@ async def delete_zone(zone_id: UUID, db: DbSession) -> None:
     # Free up the neighborhoods so they can be reassigned to another zone
     await _set_neighborhoods(db, zone.id, [])
 
-    zone.deleted_at = _utcnow()
+    zone.deleted_at = utcnow_naive()
     zone.active = False
-    zone.updated_at = _utcnow()
+    zone.updated_at = utcnow_naive()
 
     await db.commit()
     return None

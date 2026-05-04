@@ -1,26 +1,19 @@
-import { producers } from "@/lib/data";
 import { ProducerCard } from "@/components/producers/producer-card";
+import { publicFetch } from "@/lib/api-public";
 import { Users, Heart, Sprout } from "lucide-react";
+import type { ProducerFull } from "@/lib/types";
 
 const stats = [
-  {
-    icon: Users,
-    value: "15+",
-    label: "Famílias produtoras",
-  },
-  {
-    icon: Heart,
-    value: "30+",
-    label: "Anos de tradição",
-  },
-  {
-    icon: Sprout,
-    value: "100%",
-    label: "Agricultura familiar",
-  },
+  { icon: Users, value: "15+", label: "Famílias produtoras" },
+  { icon: Heart, value: "30+", label: "Anos de tradição" },
+  { icon: Sprout, value: "100%", label: "Agricultura familiar" },
 ];
 
-export default function ProdutoresPage() {
+export default async function ProdutoresPage() {
+  const producers = await publicFetch<ProducerFull[]>("/api/produtores", {
+    revalidate: 3600,
+  });
+
   return (
     <div className="flex flex-col">
       {/* Hero */}
@@ -60,11 +53,17 @@ export default function ProdutoresPage() {
       {/* Producers Grid */}
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-4 lg:px-8">
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {producers.map((producer) => (
-              <ProducerCard key={producer.id} producer={producer} />
-            ))}
-          </div>
+          {producers.length > 0 ? (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {producers.map((producer) => (
+                <ProducerCard key={producer.id} producer={producer} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-muted-foreground py-16">
+              Nenhum produtor cadastrado ainda.
+            </p>
+          )}
         </div>
       </section>
 

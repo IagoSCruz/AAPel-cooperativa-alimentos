@@ -7,12 +7,14 @@ when no curation option references it.
 Curation operations are in `routers/admin/curadorias.py`.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy import func
 from sqlmodel import select
+
+from app.utils import utcnow_naive
 
 from app.dependencies import DbSession
 from app.exceptions import BadRequest, Conflict, NotFound
@@ -33,9 +35,6 @@ from app.schemas.pagination import Page, PageMeta, PageQuery
 
 router = APIRouter()
 
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 async def _slots_for(db, template_id: UUID) -> list[BasketSlot]:
@@ -193,7 +192,7 @@ async def update_template(
     updates = payload.model_dump(exclude_unset=True)
     for field, value in updates.items():
         setattr(tpl, field, value)
-    tpl.updated_at = _utcnow()
+    tpl.updated_at = utcnow_naive()
 
     await db.commit()
     await db.refresh(tpl)
@@ -210,9 +209,9 @@ async def delete_template(template_id: UUID, db: DbSession) -> None:
     if tpl is None or tpl.deleted_at is not None:
         raise NotFound("Template não encontrado")
 
-    tpl.deleted_at = _utcnow()
+    tpl.deleted_at = utcnow_naive()
     tpl.active = False
-    tpl.updated_at = _utcnow()
+    tpl.updated_at = utcnow_naive()
     await db.commit()
     return None
 

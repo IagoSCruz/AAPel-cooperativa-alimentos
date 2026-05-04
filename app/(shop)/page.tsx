@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Truck, Leaf, Users, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SafeImage } from "@/components/ui/safe-image";
 
 const features = [
   {
@@ -116,7 +117,7 @@ export default function HomePage() {
                 className="group relative overflow-hidden rounded-xl"
               >
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img
+                  <SafeImage
                     src={category.image}
                     alt={category.name}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"

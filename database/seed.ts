@@ -516,7 +516,7 @@ async function seedCurrentCuration(
       .values({
         basketTemplateId: tpl.id,
         deliveryWeek: dateOnly(delivery),
-        customizationDeadline: isoFor(deadline),
+        customizationDeadline: deadline,
         status: "OPEN",
       })
       .returning();

@@ -1,6 +1,6 @@
 """Catalog models: Producer, Category, Product."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from uuid import UUID, uuid4
 
@@ -8,9 +8,9 @@ from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import Field, SQLModel
 
+from app.utils import utcnow_naive
+from app.models._enums_sql import PRODUCT_TYPE
 
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 class Producer(SQLModel, table=True):
@@ -27,8 +27,8 @@ class Producer(SQLModel, table=True):
     since: int | None = None
     active: bool = Field(default=True)
     deleted_at: datetime | None = None
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)
 
 
 class Category(SQLModel, table=True):
@@ -51,7 +51,7 @@ class Product(SQLModel, table=True):
     image_url: str | None = Field(default=None, max_length=500)
     stock: int = Field(default=0)
 
-    product_type: str = Field(default="FOOD", max_length=10)
+    product_type: str = Field(default="FOOD", sa_type=PRODUCT_TYPE)
     premium: bool = Field(default=False)
     organic: bool = Field(default=False)
     available: bool = Field(default=True)
@@ -61,5 +61,5 @@ class Product(SQLModel, table=True):
     producer_id: UUID = Field(foreign_key="producers.id")
 
     deleted_at: datetime | None = None
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)

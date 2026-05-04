@@ -6,6 +6,7 @@ from fastapi import APIRouter, Request, status
 from sqlmodel import select
 
 from app.config import get_settings
+from app.rate_limit import limiter
 from app.dependencies import CurrentUser, DbSession
 from app.exceptions import Conflict, Unauthorized
 from app.models.consent import ConsentHistory
@@ -69,10 +70,11 @@ def _token_pair(user: User) -> TokenPair:
     status_code=status.HTTP_201_CREATED,
     summary="Cria uma nova conta CUSTOMER e retorna tokens",
 )
+@limiter.limit("5/minute;20/hour")  # H1: blocks account flooding
 async def register(
+    request: Request,
     payload: RegisterRequest,
     db: DbSession,
-    request: Request,
 ) -> TokenPair:
     if not (payload.consent_terms and payload.consent_privacy):
         raise Conflict("Aceite dos termos e da política de privacidade é obrigatório")
@@ -108,7 +110,8 @@ async def register(
     response_model=TokenPair,
     summary="Autentica e retorna access + refresh tokens",
 )
-async def login(payload: LoginRequest, db: DbSession) -> TokenPair:
+@limiter.limit("10/minute;100/hour")  # H1: blocks credential brute-force
+async def login(request: Request, payload: LoginRequest, db: DbSession) -> TokenPair:
     result = await db.execute(select(User).where(User.email == payload.email))
     user = result.scalar_one_or_none()
 
@@ -126,7 +129,8 @@ async def login(payload: LoginRequest, db: DbSession) -> TokenPair:
     response_model=TokenPair,
     summary="Rotaciona o access token usando refresh token",
 )
-async def refresh(payload: RefreshRequest, db: DbSession) -> TokenPair:
+@limiter.limit("20/minute")  # H1: limits refresh-token grinding
+async def refresh(request: Request, payload: RefreshRequest, db: DbSession) -> TokenPair:
     try:
         token_payload = decode_token(payload.refresh_token)
     except ValueError as exc:

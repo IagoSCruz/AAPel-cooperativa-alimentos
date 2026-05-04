@@ -159,7 +159,7 @@ export function CurationEditor({
       )
     )
       return;
-    startTransition(() => deleteCurationAction(curation.id));
+    startTransition(() => { void deleteCurationAction(curation.id); });
   }
 
   return (

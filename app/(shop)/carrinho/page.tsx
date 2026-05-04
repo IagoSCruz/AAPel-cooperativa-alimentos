@@ -66,7 +66,7 @@ export default function CarrinhoPage() {
           <div className="rounded-xl border border-border bg-card">
             <div className="divide-y divide-border px-6">
               {items.map((item) => (
-                <CartItem key={item.id} item={item} />
+                <CartItem key={item.product.id} item={item} />
               ))}
             </div>
           </div>

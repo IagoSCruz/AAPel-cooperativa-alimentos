@@ -6,9 +6,9 @@ from uuid import UUID, uuid4
 
 from sqlmodel import Field, SQLModel
 
+from app.utils import utcnow_naive
+from app.models._enums_sql import CURATION_STATUS
 
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 class BasketTemplate(SQLModel, table=True):
@@ -23,8 +23,8 @@ class BasketTemplate(SQLModel, table=True):
     customization_window_hours: int = Field(default=24)
     active: bool = Field(default=True)
     deleted_at: datetime | None = None
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)
 
 
 class BasketSlot(SQLModel, table=True):
@@ -44,9 +44,9 @@ class BasketCuration(SQLModel, table=True):
     basket_template_id: UUID = Field(foreign_key="basket_templates.id")
     delivery_week: date
     customization_deadline: datetime
-    status: str = Field(default="DRAFT", max_length=20)
-    created_at: datetime = Field(default_factory=_utcnow)
-    updated_at: datetime = Field(default_factory=_utcnow)
+    status: str = Field(default="DRAFT", sa_type=CURATION_STATUS)
+    created_at: datetime = Field(default_factory=utcnow_naive)
+    updated_at: datetime = Field(default_factory=utcnow_naive)
 
 
 class BasketCurationSlotOption(SQLModel, table=True):
@@ -57,3 +57,4 @@ class BasketCurationSlotOption(SQLModel, table=True):
     basket_slot_id: UUID = Field(foreign_key="basket_slots.id")
     product_id: UUID = Field(foreign_key="products.id")
     upgrade_fee: Decimal = Field(default=Decimal("0"), max_digits=10, decimal_places=2)
+

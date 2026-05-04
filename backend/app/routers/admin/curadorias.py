@@ -11,13 +11,15 @@ DB-level CHECK constraint on `basket_curation_slot_options` already enforces
 `product_type = 'FOOD'`. We also validate at the app layer for nicer errors.
 """
 
-from datetime import datetime, timezone
+from datetime import datetime
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, status
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlmodel import select
+
+from app.utils import utcnow_naive
 
 from app.dependencies import DbSession
 from app.exceptions import BadRequest, Conflict, NotFound
@@ -43,9 +45,6 @@ from app.schemas.pagination import Page, PageMeta, PageQuery
 
 router = APIRouter()
 
-
-def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
 
 
 # Allowed FSM transitions
@@ -252,7 +251,7 @@ async def update_curation(
 
     for field, value in updates.items():
         setattr(curation, field, value)
-    curation.updated_at = _utcnow()
+    curation.updated_at = utcnow_naive()
 
     await db.commit()
     await db.refresh(curation)
@@ -381,7 +380,7 @@ async def set_options(
             )
         )
 
-    curation.updated_at = _utcnow()
+    curation.updated_at = utcnow_naive()
     await db.commit()
     await db.refresh(curation)
     return await _build_response(db, curation)
@@ -438,7 +437,7 @@ async def change_status(
                 )
 
     curation.status = new_status.value
-    curation.updated_at = _utcnow()
+    curation.updated_at = utcnow_naive()
     await db.commit()
     await db.refresh(curation)
     return await _build_response(db, curation)

@@ -21,6 +21,9 @@ services:
       - ./backend/app:/app/app
     environment:
       DEBUG: "true"
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    # Use `python -m uvicorn` instead of the `uvicorn` wrapper script — the
+    # wrapper's shebang gets baked with the builder-stage path (/app/backend/.venv)
+    # and breaks when the venv is COPYed into /app/.venv in the runtime image.
+    command: ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     ports:
       - "8000:8000"
