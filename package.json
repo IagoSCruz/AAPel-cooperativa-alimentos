@@ -27,6 +27,12 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^2.6.0"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^22.10.2",
