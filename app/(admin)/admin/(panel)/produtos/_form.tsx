@@ -4,6 +4,8 @@ import { useActionState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
+import { ImageUrlField } from "@/components/admin/image-url-field";
+
 import { ActionState, INITIAL, deleteProductAction } from "./actions";
 
 export type ProductInitial = {
@@ -141,11 +143,10 @@ export function ProductForm({
           />
         </div>
 
-        <Field
-          label="URL da imagem"
+        <ImageUrlField
+          label="Imagem do produto"
           name="image_url"
-          type="url"
-          defaultValue={initial?.image_url ?? ""}
+          defaultValue={initial?.image_url}
         />
 
         <div className="grid gap-3 md:grid-cols-2">

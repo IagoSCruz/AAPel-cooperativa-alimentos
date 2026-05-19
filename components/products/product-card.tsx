@@ -68,6 +68,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
           <Button
+            type="button"
             size="sm"
             onClick={() => addItem(product)}
             disabled={!product.available || product.stock === 0 || reachedStockCap}

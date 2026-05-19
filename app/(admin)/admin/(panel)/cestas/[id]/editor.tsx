@@ -4,6 +4,8 @@ import { useActionState, useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
+import { ImageUrlField } from "@/components/admin/image-url-field";
+
 import {
   INITIAL,
   addSlotAction,
@@ -96,11 +98,10 @@ export function TemplateEditor({ template }: { template: TemplateInitial }) {
             defaultValue={template.customization_window_hours.toString()}
           />
         </div>
-        <Field
-          label="URL da imagem"
+        <ImageUrlField
+          label="Imagem da cesta"
           name="image_url"
-          type="url"
-          defaultValue={template.image_url ?? ""}
+          defaultValue={template.image_url}
         />
         <label className="flex items-center gap-2 text-sm">
           <input

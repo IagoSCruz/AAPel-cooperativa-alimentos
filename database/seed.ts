@@ -14,7 +14,7 @@ import bcrypt from "bcryptjs";
 import { db } from "./client";
 import * as s from "./schema";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@aapel.local";
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@aapel.com.br";
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "changeme";
 const ADMIN_NAME = process.env.ADMIN_NAME ?? "Admin AAPel";
 const BCRYPT_ROUNDS = Number(process.env.BCRYPT_ROUNDS ?? 12);
