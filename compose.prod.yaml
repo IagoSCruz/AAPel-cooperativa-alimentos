@@ -32,7 +32,7 @@ services:
       # Must match api service — used by middleware + session cookies (jose).
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:3000/"]
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/"]
       interval: 30s
       timeout: 5s
       retries: 3

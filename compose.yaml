@@ -72,6 +72,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      CI: "true"
       DATABASE_URL: postgresql://${POSTGRES_USER:-aapel}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-aapel}
     restart: "no"
 

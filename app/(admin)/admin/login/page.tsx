@@ -7,7 +7,7 @@
 
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Leaf } from "lucide-react";
 
@@ -16,6 +16,14 @@ import { loginAction, type LoginState } from "./actions";
 const INITIAL: LoginState = { status: "idle" };
 
 export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-muted flex items-center justify-center p-4"><Leaf className="h-6 w-6 text-primary animate-pulse" /></div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [state, formAction, pending] = useActionState(loginAction, INITIAL);
   const searchParams = useSearchParams();
   const queryError = searchParams.get("error");

@@ -6,7 +6,8 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 
 import { ImageUrlField } from "@/components/admin/image-url-field";
 
-import { ActionState, INITIAL, deleteProductAction } from "./actions";
+import { ActionState, INITIAL } from "./types";
+import { deleteProductAction } from "./actions";
 
 export type ProductInitial = {
   id: string;

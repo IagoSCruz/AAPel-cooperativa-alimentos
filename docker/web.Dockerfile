@@ -9,7 +9,8 @@
 #   migrate   — drizzle-kit + tsx for one-off migrations and seed
 # ============================================================================
 
-ARG NODE_VERSION=20
+ARG NODE_VERSION=22
+ARG INTERNAL_API_URL=http://localhost:8000
 
 # ---------- deps -------------------------------------------------------------
 FROM node:${NODE_VERSION}-alpine AS deps
@@ -18,20 +19,26 @@ WORKDIR /app
 # libc6-compat helps with binary deps on Alpine
 RUN apk add --no-cache libc6-compat
 
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml ./
 RUN corepack enable pnpm && \
+    corepack prepare pnpm@10.8.1 --activate && \
     (pnpm install --frozen-lockfile 2>/dev/null || pnpm install)
 
 # ---------- builder ----------------------------------------------------------
 FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
 
+ARG INTERNAL_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-RUN corepack enable pnpm && pnpm build
+RUN corepack enable pnpm && corepack prepare pnpm@10.8.1 --activate && \
+    JWT_SECRET=build-only-dummy-do-not-use \
+    JWT_ALGORITHM=HS256 \
+    INTERNAL_API_URL=${INTERNAL_API_URL} \
+    CI=true pnpm build
 
 # ---------- runtime (production web) -----------------------------------------
 FROM node:${NODE_VERSION}-alpine AS runtime
@@ -56,7 +63,7 @@ USER nextjs
 EXPOSE 3000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-    CMD wget --spider --quiet http://localhost:3000/ || exit 1
+    CMD wget --spider --quiet http://127.0.0.1:3000/ || exit 1
 
 CMD ["node", "server.js"]
 
@@ -73,6 +80,6 @@ COPY package.json pnpm-lock.yaml* ./
 COPY drizzle.config.ts ./
 COPY database ./database
 
-RUN corepack enable pnpm
+RUN corepack enable pnpm && corepack prepare pnpm@10.8.1 --activate
 
 CMD ["pnpm", "db:migrate"]

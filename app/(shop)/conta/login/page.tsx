@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Leaf } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,14 @@ import { loginAction, type LoginState } from "./actions";
 const initialState: LoginState = { error: null };
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-[80vh] items-center justify-center"><Leaf className="h-6 w-6 text-primary animate-pulse" /></div>}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
   const [state, action, isPending] = useActionState(loginAction, initialState);
   const searchParams = useSearchParams();
   const rawNext = searchParams.get("next");
