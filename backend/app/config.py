@@ -44,6 +44,10 @@ class Settings(BaseSettings):
     # LGPD
     analytics_pepper: str = "dev-pepper-replace-me"
 
+    # Uploaded images (admin) — served at /uploads/*
+    upload_dir: str = "/app/uploads"
+    upload_max_bytes: int = 5 * 1024 * 1024  # 5 MiB
+
     @property
     def origins_list(self) -> list[str]:
         return [o.strip() for o in self.allowed_origins.split(",") if o.strip()]

@@ -3,13 +3,14 @@
 from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, Field
 
 from app.models.enums import UserRole
+from app.schemas.email import AuthEmail
 
 
 class RegisterRequest(BaseModel):
-    email: EmailStr
+    email: AuthEmail
     password: str = Field(min_length=8, max_length=72)  # bcrypt 72-byte limit
     name: str = Field(min_length=2, max_length=255)
     phone: str | None = Field(default=None, max_length=20)
@@ -20,7 +21,7 @@ class RegisterRequest(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    email: EmailStr
+    email: AuthEmail
     password: str
 
 
@@ -37,7 +38,7 @@ class RefreshRequest(BaseModel):
 
 class UserResponse(BaseModel):
     id: UUID
-    email: EmailStr
+    email: str
     name: str
     role: UserRole
     phone: str | None

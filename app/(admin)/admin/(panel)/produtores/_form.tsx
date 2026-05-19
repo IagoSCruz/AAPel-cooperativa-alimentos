@@ -4,6 +4,8 @@ import { useActionState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
+import { ImageUrlField } from "@/components/admin/image-url-field";
+
 import { ActionState, INITIAL, deleteProducerAction } from "./actions";
 
 export type ProducerInitial = {
@@ -105,17 +107,15 @@ export function ProducerForm({ initial, onSubmit, submitLabel }: Props) {
           placeholder="Separadas por vírgula. Ex: Morango, Pêssego, Uva"
         />
         <div className="grid gap-5 md:grid-cols-2">
-          <Field
-            label="URL da foto (avatar)"
+          <ImageUrlField
+            label="Foto (avatar)"
             name="image_url"
-            type="url"
-            defaultValue={initial?.image_url ?? ""}
+            defaultValue={initial?.image_url}
           />
-          <Field
-            label="URL da capa"
+          <ImageUrlField
+            label="Imagem de capa"
             name="cover_image_url"
-            type="url"
-            defaultValue={initial?.cover_image_url ?? ""}
+            defaultValue={initial?.cover_image_url}
           />
         </div>
         <label className="flex items-center gap-2 text-sm">

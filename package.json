@@ -12,6 +12,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx database/seed.ts",
+    "db:create-admin": "tsx database/create-admin.ts",
     "db:reset": "drizzle-kit drop && drizzle-kit push && pnpm db:seed"
   },
   "dependencies": {

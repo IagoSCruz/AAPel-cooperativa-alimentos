@@ -4,9 +4,11 @@ Exposes the API under /api with OpenAPI docs at /api/docs.
 """
 
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
@@ -23,13 +25,13 @@ from app.routers.admin import router as admin_router
 from app import models  # noqa: F401
 
 _settings = get_settings()
+_upload_root = Path(_settings.upload_dir)
+_upload_root.mkdir(parents=True, exist_ok=True)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # startup
     yield
-    # shutdown
 
 
 # H4: hide OpenAPI/Swagger/ReDoc in production — DEBUG=true gates dev only.
@@ -74,6 +76,13 @@ app.include_router(pedidos.router, prefix="/api/pedidos", tags=["pedidos"])
 # Admin sub-router (all nested routes require ADMIN role — guard applied at the
 # sub-router level in app.routers.admin.__init__).
 app.include_router(admin_router, prefix="/api/admin")
+
+# Public static files for admin-uploaded images (Caddy proxies /uploads → api).
+app.mount(
+    "/uploads",
+    StaticFiles(directory=str(_upload_root)),
+    name="uploads",
+)
 
 
 @app.get("/health", tags=["meta"], summary="Healthcheck")
