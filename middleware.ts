@@ -9,9 +9,9 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
-import { SESSION_COOKIE } from "@/lib/session";
+import { SESSION_COOKIE, getJwtSecret } from "@/lib/session";
 
-const SECRET = new TextEncoder().encode(process.env.JWT_SECRET ?? "");
+const SECRET = getJwtSecret();
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

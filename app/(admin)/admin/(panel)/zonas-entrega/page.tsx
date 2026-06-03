@@ -2,18 +2,7 @@ import Link from "next/link";
 import { Plus, Truck } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
-
-type Zone = {
-  id: string;
-  name: string;
-  delivery_fee: string;
-  minimum_order_value: string;
-  estimated_minutes: number | null;
-  active: boolean;
-  neighborhoods: string[];
-};
-
-type Page<T> = { data: T[]; pagination: { total: number } };
+import type { Page, DeliveryZone as Zone } from "@/lib/types";
 
 export default async function ZonasPage({
   searchParams,

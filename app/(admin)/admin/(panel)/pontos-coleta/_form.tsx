@@ -4,7 +4,7 @@ import { useActionState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
-import { ActionState, INITIAL } from "./types";
+import { ActionState, INITIAL } from "@/lib/admin-action-state";
 import { deleteCollectionPointAction } from "./actions";
 
 export type CollectionPointInitial = {

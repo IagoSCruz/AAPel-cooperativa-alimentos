@@ -8,17 +8,9 @@
 import { Tags } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
+import type { Page, CategoryItem as Category } from "@/lib/types";
 import { CategoryRow } from "./category-row";
 import { CreateCategoryForm } from "./create-form";
-
-type Category = {
-  id: string;
-  name: string;
-  description: string | null;
-  image_url: string | null;
-};
-
-type Page<T> = { data: T[]; pagination: { total: number } };
 
 export default async function CategoriasPage() {
   const result = await apiFetch<Page<Category>>("/api/admin/categorias?limit=100");

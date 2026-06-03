@@ -2,17 +2,7 @@ import Link from "next/link";
 import { Plus, Sprout } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
-
-type Producer = {
-  id: string;
-  name: string;
-  location: string | null;
-  since: number | null;
-  active: boolean;
-  specialties: string[] | null;
-};
-
-type Page<T> = { data: T[]; pagination: { total: number } };
+import type { Page, ProducerFull as Producer } from "@/lib/types";
 
 export default async function ProdutoresPage({
   searchParams,

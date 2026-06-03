@@ -6,7 +6,7 @@ import { ArrowLeft, Trash2 } from "lucide-react";
 
 import { ImageUrlField } from "@/components/admin/image-url-field";
 
-import { ActionState, INITIAL } from "./types";
+import { ActionState, INITIAL } from "@/lib/admin-action-state";
 import { deleteProducerAction } from "./actions";
 
 export type ProducerInitial = {

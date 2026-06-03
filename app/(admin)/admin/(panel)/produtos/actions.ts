@@ -1,6 +1,6 @@
 "use server";
 
-import type { ActionState } from "./types";
+import type { ActionState } from "@/lib/admin-action-state";
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";

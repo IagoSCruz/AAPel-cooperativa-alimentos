@@ -2,19 +2,7 @@ import Link from "next/link";
 import { Package, Plus } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
-
-type Template = {
-  id: string;
-  name: string;
-  description: string | null;
-  base_price: string;
-  serves: string | null;
-  customization_window_hours: number;
-  active: boolean;
-  slots: Array<{ id: string; slot_label: string; item_count: number }>;
-};
-
-type Page<T> = { data: T[]; pagination: { total: number } };
+import type { Page, BasketTemplate as Template } from "@/lib/types";
 
 export default async function CestasPage({
   searchParams,

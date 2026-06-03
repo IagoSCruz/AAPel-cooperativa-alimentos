@@ -8,19 +8,12 @@ import Link from "next/link";
 import { Calendar, Plus } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
+import type { Page, BasketTemplate } from "@/lib/types";
 import { CreateCurationForm } from "./create-form";
 
 // ----------------------------------------------------------------------------
 // Types
 // ----------------------------------------------------------------------------
-
-type BasketTemplate = {
-  id: string;
-  name: string;
-  base_price: string;
-  customization_window_hours: number;
-  active: boolean;
-};
 
 type CurationStatus = "DRAFT" | "OPEN" | "CLOSED";
 
@@ -32,11 +25,6 @@ type CurationListItem = {
   customization_deadline: string;
   status: CurationStatus;
   slots: Array<{ slot: { id: string }; options: unknown[] }>;
-};
-
-type Page<T> = {
-  data: T[];
-  pagination: { total: number; page: number; limit: number; has_next: boolean };
 };
 
 // ----------------------------------------------------------------------------
