@@ -9,6 +9,7 @@ import {
   Calendar,
   MapPin,
   Package,
+  ShoppingBag,
   Sprout,
   Tags,
   Truck,
@@ -24,27 +25,43 @@ export default function AdminHomePage() {
         </p>
       </header>
 
-      {/* Curadoria semanal — destaque */}
+      {/* Operações semanais */}
       <section className="space-y-3">
         <h2 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-          Operações semanais
+          Operações
         </h2>
-        <Link
-          href="/admin/curadorias"
-          className="flex items-start gap-4 rounded-xl border bg-card p-5 hover:shadow-md transition-shadow"
-        >
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-            <Calendar className="h-6 w-6 text-primary" />
-          </div>
-          <div>
-            <p className="font-semibold text-base">Curadorias</p>
-            <p className="text-sm text-muted-foreground mt-0.5">
-              Abra ou gerencie a curadoria semanal de cada cesta — defina os
-              produtos elegíveis por slot e controle o status (Draft → Open →
-              Closed).
-            </p>
-          </div>
-        </Link>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Link
+            href="/admin/curadorias"
+            className="flex items-start gap-4 rounded-xl border bg-card p-5 hover:shadow-md transition-shadow"
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <Calendar className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-base">Curadorias</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Defina os produtos elegíveis por slot e controle o status da
+                curadoria semanal.
+              </p>
+            </div>
+          </Link>
+          <Link
+            href="/admin/pedidos"
+            className="flex items-start gap-4 rounded-xl border bg-card p-5 hover:shadow-md transition-shadow"
+          >
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+              <ShoppingBag className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <p className="font-semibold text-base">Pedidos</p>
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Acompanhe e atualize o status de pedidos e pagamentos dos
+                clientes.
+              </p>
+            </div>
+          </Link>
+        </div>
       </section>
 
       {/* Catálogo */}
