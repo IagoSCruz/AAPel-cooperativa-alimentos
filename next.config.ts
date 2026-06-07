@@ -13,7 +13,9 @@ const appHostname = (() => {
 const nextConfig: NextConfig = {
   // Self-contained server bundle for Docker deploys.
   // Produces .next/standalone/server.js — runs without node_modules at runtime.
-  output: "standalone",
+  // On Vercel, the platform handles output itself, so "standalone" must be
+  // disabled — otherwise Vercel looks for a static "public" output dir and fails.
+  output: process.env.VERCEL ? undefined : "standalone",
 
   images: {
     remotePatterns: [
