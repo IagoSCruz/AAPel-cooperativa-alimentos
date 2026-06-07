@@ -16,12 +16,16 @@ import { jwtVerify } from "jose";
 export const CUSTOMER_SESSION_COOKIE = "aapel_customer_session";
 export const CUSTOMER_REFRESH_COOKIE = "aapel_customer_refresh";
 
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET ??
-    (() => {
-      throw new Error("JWT_SECRET not set");
-    })(),
-);
+/**
+ * Returns the encoded JWT_SECRET. Resolved lazily at request time (not at
+ * build/import time) so the build doesn't fail when the env var is only
+ * available in the runtime environment.
+ */
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET not set");
+  return new TextEncoder().encode(secret);
+}
 
 export type CustomerSessionUser = {
   id: string;
@@ -50,7 +54,7 @@ export async function getCustomerSession(): Promise<CustomerSession | null> {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     if (typeof payload.sub !== "string" || typeof payload.role !== "string") {
       return null;
     }

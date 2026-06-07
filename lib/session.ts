@@ -15,14 +15,16 @@ import { jwtVerify } from "jose";
 export const SESSION_COOKIE = "aapel_admin_session";
 export const REFRESH_COOKIE = "aapel_admin_refresh";
 
-/** Returns the encoded JWT_SECRET. Throws at startup if the var is missing. */
+/**
+ * Returns the encoded JWT_SECRET. Throws at request time (not at build/import
+ * time) if the var is missing, so the build doesn't fail when the env var is
+ * only present in the runtime environment.
+ */
 export function getJwtSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET;
   if (!secret) throw new Error("JWT_SECRET env var is not set");
   return new TextEncoder().encode(secret);
 }
-
-const SECRET = getJwtSecret();
 
 export type SessionUser = {
   id: string;
@@ -45,7 +47,7 @@ export async function getSession(): Promise<Session | null> {
   if (!token) return null;
 
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     if (typeof payload.sub !== "string" || typeof payload.role !== "string") {
       return null;
     }

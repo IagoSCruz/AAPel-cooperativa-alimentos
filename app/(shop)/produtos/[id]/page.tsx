@@ -3,6 +3,10 @@ import { publicFetch, ApiPublicError } from "@/lib/api-public";
 import { ProductDetailClient } from "./_detail";
 import type { Page, ProductItem } from "@/lib/types";
 
+// Rendered at request time — depends on the FastAPI backend, which isn't
+// available during the build/prerender step.
+export const dynamic = "force-dynamic";
+
 export default async function ProductDetailPage({
   params,
 }: {

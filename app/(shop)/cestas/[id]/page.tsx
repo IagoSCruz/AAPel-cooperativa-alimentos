@@ -9,6 +9,10 @@ import { BasketCustomizer } from "./_basket-customizer";
 import type { BasketCuration, BasketTemplate, DeliveryZone } from "@/lib/types";
 import { SafeImage } from "@/components/ui/safe-image";
 
+// Rendered at request time — depends on the FastAPI backend, which isn't
+// available during the build/prerender step.
+export const dynamic = "force-dynamic";
+
 export default async function BasketDetailPage({
   params,
 }: {

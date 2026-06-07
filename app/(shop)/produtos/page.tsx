@@ -5,6 +5,10 @@ import { ProductFilters } from "./_filters";
 import { publicFetch } from "@/lib/api-public";
 import type { CategoryItem, Page, ProductItem } from "@/lib/types";
 
+// Rendered at request time — depends on the FastAPI backend, which isn't
+// available during the build/prerender step.
+export const dynamic = "force-dynamic";
+
 interface SearchParams {
   busca?: string;
   categoria?: string;
