@@ -8,6 +8,21 @@
  * In production this should be derived from env (cooperative-uploaded CDN
  * domain) so deploys do not require code changes.
  */
-export const ALLOWED_IMAGE_HOSTS: ReadonlySet<string> = new Set([
-  "images.unsplash.com",
-]);
+const STATIC_ALLOWED_HOSTS = ["images.unsplash.com"] as const;
+
+/** Hostnames allowed for https:// image URLs (plus same-origin /uploads paths). */
+export function getAllowedImageHosts(): ReadonlySet<string> {
+  const hosts = new Set<string>(STATIC_ALLOWED_HOSTS);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
+  if (appUrl) {
+    try {
+      hosts.add(new URL(appUrl).hostname.toLowerCase());
+    } catch {
+      /* ignore invalid URL */
+    }
+  }
+  return hosts;
+}
+
+/** @deprecated Use getAllowedImageHosts() for dynamic production domain. */
+export const ALLOWED_IMAGE_HOSTS: ReadonlySet<string> = getAllowedImageHosts();

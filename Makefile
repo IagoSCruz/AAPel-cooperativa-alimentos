@@ -80,6 +80,10 @@ migrate-generate: ## Generate a new migration from schema changes (host-side)
 seed: ## Run database seed (dev)
 	$(COMPOSE_DEV) --profile migrate run --rm migrate pnpm db:seed
 
+.PHONY: create-admin
+create-admin: ## Create or reset ADMIN user (non-destructive)
+	$(COMPOSE_DEV) --profile migrate run --rm migrate pnpm db:create-admin
+
 .PHONY: db-reset
 db-reset: dev-clean dev migrate seed ## Wipe + recreate + seed (DESTRUCTIVE, dev only)
 

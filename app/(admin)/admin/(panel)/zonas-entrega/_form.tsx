@@ -4,7 +4,8 @@ import { useActionState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
 
-import { ActionState, INITIAL, deleteZoneAction } from "./actions";
+import { ActionState, INITIAL } from "./types";
+import { deleteZoneAction } from "./actions";
 
 export type ZoneInitial = {
   id: string;

@@ -49,6 +49,9 @@ services:
       BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-12}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:3000}
       DEBUG: ${DEBUG:-false}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - uploads_data:/app/uploads
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,sys; urllib.request.urlopen('http://localhost:8000/health',timeout=3)"]
       interval: 30s
@@ -69,9 +72,12 @@ services:
       db:
         condition: service_healthy
     environment:
+      CI: "true"
       DATABASE_URL: postgresql://${POSTGRES_USER:-aapel}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-aapel}
     restart: "no"
 
 volumes:
   pgdata:
     name: aapel_pgdata
+  uploads_data:
+    name: aapel_uploads

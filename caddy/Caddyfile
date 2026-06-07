@@ -37,6 +37,15 @@
         -Server
     }
 
+    # Uploaded images (admin) — served by FastAPI StaticFiles
+    handle /uploads/* {
+        reverse_proxy api:8000 {
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
     # API: route /api/* to FastAPI
     handle /api/* {
         reverse_proxy api:8000 {

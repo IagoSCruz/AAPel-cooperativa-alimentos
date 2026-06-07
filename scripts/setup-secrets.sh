@@ -66,11 +66,15 @@ ALLOWED_ORIGINS=https://${AAPEL_DOMAIN}
 DEBUG=false"
 
 # -- web.env ----------------------------------------------------------------
+# Reuse JWT_SECRET from api.env so Next.js can verify FastAPI tokens.
+# shellcheck disable=SC1090
+source "$SECRETS_DIR/api.env"
 NEXTAUTH_SECRET=$(gen_secret)
 write_secret "$SECRETS_DIR/web.env" "NODE_ENV=production
 NEXT_PUBLIC_APP_URL=https://${AAPEL_DOMAIN}
 NEXT_PUBLIC_API_URL=https://${AAPEL_DOMAIN}/api
 INTERNAL_API_URL=http://api:8000
+JWT_SECRET=${JWT_SECRET}
 NEXTAUTH_URL=https://${AAPEL_DOMAIN}
 NEXTAUTH_SECRET=$NEXTAUTH_SECRET"
 

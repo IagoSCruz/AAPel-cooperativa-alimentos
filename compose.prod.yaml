@@ -27,9 +27,12 @@ services:
       PORT: "3000"
       HOSTNAME: "0.0.0.0"
       NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://localhost}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://localhost/api}
       INTERNAL_API_URL: http://api:8000
+      # Must match api service — used by middleware + session cookies (jose).
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET required}
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://localhost:3000/"]
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/"]
       interval: 30s
       timeout: 5s
       retries: 3

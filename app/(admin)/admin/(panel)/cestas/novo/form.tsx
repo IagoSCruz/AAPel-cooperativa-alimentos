@@ -4,6 +4,8 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
+import { ImageUrlField } from "@/components/admin/image-url-field";
+
 import { INITIAL, createTemplateAction } from "../actions";
 
 type SlotDraft = { id: string; slot_label: string; item_count: number };
@@ -75,7 +77,7 @@ export function CreateTemplateForm() {
           />
         </div>
 
-        <Field label="URL da imagem" name="image_url" type="url" />
+        <ImageUrlField label="Imagem da cesta" name="image_url" />
 
         <label className="flex items-center gap-2 text-sm">
           <input

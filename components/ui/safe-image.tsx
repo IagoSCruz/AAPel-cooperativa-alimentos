@@ -13,7 +13,7 @@
  * left empty so the surrounding placeholder stays visible.
  */
 
-import { ALLOWED_IMAGE_HOSTS } from "@/lib/image-allowlist";
+import { getAllowedImageHosts } from "@/lib/image-allowlist";
 import type { ImgHTMLAttributes } from "react";
 
 function isAllowed(src: string | undefined): boolean {
@@ -28,7 +28,7 @@ function isAllowed(src: string | undefined): boolean {
   try {
     const u = new URL(src);
     if (u.protocol !== "https:") return false;
-    return ALLOWED_IMAGE_HOSTS.has(u.hostname.toLowerCase());
+    return getAllowedImageHosts().has(u.hostname.toLowerCase());
   } catch {
     return false;
   }

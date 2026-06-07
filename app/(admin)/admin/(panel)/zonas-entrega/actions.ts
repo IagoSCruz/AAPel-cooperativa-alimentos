@@ -1,17 +1,12 @@
 "use server";
 
+import type { ActionState } from "./types";
+
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { ApiError, apiFetch } from "@/lib/api-server";
 import { requireAdmin } from "@/lib/session";
-
-export type ActionState =
-  | { status: "idle" }
-  | { status: "ok"; message?: string }
-  | { status: "error"; message: string };
-
-export const INITIAL: ActionState = { status: "idle" };
 
 function readForm(formData: FormData) {
   const neighborhoodsRaw = formData.get("neighborhoods")?.toString() ?? "";
