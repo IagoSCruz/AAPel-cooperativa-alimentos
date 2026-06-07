@@ -20,12 +20,16 @@ import { extractApiErrorMessage } from "@/lib/api-errors";
 
 const API_BASE = process.env.INTERNAL_API_URL ?? "http://localhost:8000";
 
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET ??
-    (() => {
-      throw new Error("JWT_SECRET not set");
-    })(),
-);
+/**
+ * Returns the encoded JWT_SECRET. Resolved lazily at request time (not at
+ * build/import time) so the build doesn't fail when the env var is only
+ * available in the runtime environment.
+ */
+function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET not set");
+  return new TextEncoder().encode(secret);
+}
 
 export type LoginState =
   | { status: "idle" }
@@ -72,7 +76,7 @@ export async function loginAction(
   // Verify the access token shape and admin role
   let role: string | undefined;
   try {
-    const { payload } = await jwtVerify(tokens.access_token, SECRET);
+    const { payload } = await jwtVerify(tokens.access_token, getJwtSecret());
     role = typeof payload.role === "string" ? payload.role : undefined;
   } catch {
     return { status: "error", message: "Token inválido recebido do servidor." };

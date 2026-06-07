@@ -11,8 +11,6 @@ import { jwtVerify } from "jose";
 
 import { SESSION_COOKIE, getJwtSecret } from "@/lib/session";
 
-const SECRET = getJwtSecret();
-
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -26,7 +24,7 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    const { payload } = await jwtVerify(token, SECRET);
+    const { payload } = await jwtVerify(token, getJwtSecret());
     if (payload.role !== "ADMIN") {
       const url = new URL("/admin/login", req.url);
       url.searchParams.set("error", "forbidden");

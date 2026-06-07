@@ -3,6 +3,10 @@ import { publicFetch } from "@/lib/api-public";
 import { Users, Heart, Sprout } from "lucide-react";
 import type { ProducerFull } from "@/lib/types";
 
+// Rendered at request time — depends on the FastAPI backend, which isn't
+// available during the build/prerender step.
+export const dynamic = "force-dynamic";
+
 const stats = [
   { icon: Users, value: "15+", label: "Famílias produtoras" },
   { icon: Heart, value: "30+", label: "Anos de tradição" },
