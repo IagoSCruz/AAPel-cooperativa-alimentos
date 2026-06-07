@@ -1,11 +1,10 @@
 import { notFound } from "next/navigation";
 
 import { ApiError, apiFetch } from "@/lib/api-server";
+import type { Page } from "@/lib/types";
 
 import { ProductForm, ProductInitial, CategoryOption, ProducerOption } from "../_form";
 import { updateProductAction } from "../actions";
-
-type Page<T> = { data: T[] };
 
 export default async function EditProdutoPage({
   params,

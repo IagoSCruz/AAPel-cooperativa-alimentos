@@ -13,19 +13,16 @@ import { redirect } from "next/navigation";
 
 import { ApiError, apiFetch } from "@/lib/api-server";
 import { requireAdmin } from "@/lib/session";
+import { type ActionState, INITIAL } from "@/lib/admin-action-state";
+
+export { INITIAL };
+export type { ActionState };
 
 // ----------------------------------------------------------------------------
 // Types matching FastAPI schemas (subset, for DTO at the boundary)
 // ----------------------------------------------------------------------------
 
 export type CurationStatus = "DRAFT" | "OPEN" | "CLOSED";
-
-export type ActionState =
-  | { status: "idle" }
-  | { status: "ok"; message?: string }
-  | { status: "error"; message: string };
-
-export const INITIAL: ActionState = { status: "idle" };
 
 // ----------------------------------------------------------------------------
 // createCuration

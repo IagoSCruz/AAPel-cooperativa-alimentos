@@ -171,6 +171,7 @@ export interface CollectionPoint {
 
 export type DeliveryMethod = "PICKUP" | "HOME_DELIVERY";
 export type PaymentMethod = "PIX" | "CASH" | "CARD";
+export type PaymentStatus = "PENDING" | "PAID" | "REFUNDED";
 export type OrderStatus =
   | "PENDING"
   | "CONFIRMED"
@@ -203,6 +204,13 @@ export interface OrderResponse {
   notes: string | null;
   items: OrderItemResponse[];
   created_at: string;
+}
+
+export interface AdminOrderResponse extends OrderResponse {
+  payment_status: PaymentStatus;
+  customer_id: string;
+  customer_name: string;
+  customer_email: string;
 }
 
 // ---------------------------------------------------------------------------

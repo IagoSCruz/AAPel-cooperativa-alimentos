@@ -14,6 +14,7 @@ import {
   LogOut,
   MapPin,
   Package,
+  ShoppingBag,
   Sprout,
   Tags,
   Truck,
@@ -47,8 +48,12 @@ export default async function AdminPanelLayout({
           <NavItem href="/admin" icon={LayoutDashboard}>
             Início
           </NavItem>
+          <NavSection label="Operações" />
           <NavItem href="/admin/curadorias" icon={Calendar}>
             Curadorias
+          </NavItem>
+          <NavItem href="/admin/pedidos" icon={ShoppingBag}>
+            Pedidos
           </NavItem>
           <NavSection label="Catálogo" />
           <NavItem href="/admin/produtos" icon={Apple}>

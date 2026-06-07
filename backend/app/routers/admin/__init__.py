@@ -14,6 +14,7 @@ from app.routers.admin import (
     categorias,
     cestas,
     curadorias,
+    pedidos,
     pontos_coleta,
     produtores,
     produtos,
@@ -30,4 +31,5 @@ router.include_router(cestas.router, prefix="/cestas", tags=["admin-cestas"])
 router.include_router(curadorias.router, prefix="/curadorias", tags=["admin-curadorias"])
 router.include_router(zonas_entrega.router, prefix="/zonas-entrega", tags=["admin-zonas-entrega"])
 router.include_router(pontos_coleta.router, prefix="/pontos-coleta", tags=["admin-pontos-coleta"])
+router.include_router(pedidos.router, prefix="/pedidos", tags=["admin-pedidos"])
 router.include_router(uploads.router, prefix="/uploads", tags=["admin-uploads"])

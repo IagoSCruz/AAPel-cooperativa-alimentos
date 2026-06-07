@@ -16,6 +16,7 @@ import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
 
 import { SESSION_COOKIE, REFRESH_COOKIE } from "@/lib/session";
+import { extractApiErrorMessage } from "@/lib/api-errors";
 
 const API_BASE = process.env.INTERNAL_API_URL ?? "http://localhost:8000";
 
@@ -57,10 +58,8 @@ export async function loginAction(
       cache: "no-store",
     });
     if (!res.ok) {
-      const detail = await res.json().catch(() => ({}));
-      const msg =
-        (detail as { detail?: string })?.detail ?? "Credenciais inválidas.";
-      return { status: "error", message: msg };
+      const body = await res.json().catch(() => ({}));
+      return { status: "error", message: extractApiErrorMessage(body, "Credenciais inválidas.") };
     }
     tokens = (await res.json()) as TokenPair;
   } catch (e) {

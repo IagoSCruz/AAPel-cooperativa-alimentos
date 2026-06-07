@@ -5,13 +5,10 @@ import { redirect } from "next/navigation";
 
 import { ApiError, apiFetch } from "@/lib/api-server";
 import { requireAdmin } from "@/lib/session";
+import { type ActionState, INITIAL } from "@/lib/admin-action-state";
 
-export type ActionState =
-  | { status: "idle" }
-  | { status: "ok"; message?: string }
-  | { status: "error"; message: string };
-
-export const INITIAL: ActionState = { status: "idle" };
+export { INITIAL };
+export type { ActionState };
 
 type SlotInput = { slot_label: string; position: number; item_count: number };
 

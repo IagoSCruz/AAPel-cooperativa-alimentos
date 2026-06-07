@@ -2,18 +2,7 @@ import Link from "next/link";
 import { MapPin, Plus } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
-
-type CollectionPoint = {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  schedule: string | null;
-  active: boolean;
-};
-
-type Page<T> = { data: T[]; pagination: { total: number } };
+import type { Page, CollectionPoint } from "@/lib/types";
 
 export default async function PontosColetaPage({
   searchParams,

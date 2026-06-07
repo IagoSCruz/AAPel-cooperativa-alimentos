@@ -1,6 +1,7 @@
 "use server";
 
 import { requireAdmin } from "@/lib/session";
+import { extractApiErrorMessage } from "@/lib/api-errors";
 
 export type UploadState =
   | { status: "idle" }
@@ -35,14 +36,8 @@ export async function uploadImageAction(
     });
 
     if (!res.ok) {
-      let message = "Falha ao enviar imagem.";
-      try {
-        const payload = (await res.json()) as { detail?: string };
-        if (payload.detail) message = payload.detail;
-      } catch {
-        /* ignore */
-      }
-      return { status: "error", message };
+      const body = await res.json().catch(() => ({}));
+      return { status: "error", message: extractApiErrorMessage(body, "Falha ao enviar imagem.") };
     }
 
     const data = (await res.json()) as { url: string };

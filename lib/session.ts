@@ -15,12 +15,14 @@ import { jwtVerify } from "jose";
 export const SESSION_COOKIE = "aapel_admin_session";
 export const REFRESH_COOKIE = "aapel_admin_refresh";
 
-const SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET ??
-    (() => {
-      throw new Error("JWT_SECRET not set");
-    })(),
-);
+/** Returns the encoded JWT_SECRET. Throws at startup if the var is missing. */
+export function getJwtSecret(): Uint8Array {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) throw new Error("JWT_SECRET env var is not set");
+  return new TextEncoder().encode(secret);
+}
+
+const SECRET = getJwtSecret();
 
 export type SessionUser = {
   id: string;

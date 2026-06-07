@@ -12,6 +12,7 @@
  */
 
 import { getSession } from "@/lib/session";
+import { extractApiErrorMessage } from "@/lib/api-errors";
 
 const BASE = process.env.INTERNAL_API_URL ?? "http://localhost:8000";
 
@@ -48,14 +49,11 @@ export async function apiFetch<T>(path: string, init: FetchOptions = {}): Promis
   });
 
   if (!res.ok) {
-    let detail: string;
     let payload: unknown;
+    let detail: string;
     try {
       payload = await res.json();
-      detail =
-        (payload as { detail?: string; title?: string })?.detail ??
-        (payload as { title?: string })?.title ??
-        res.statusText;
+      detail = extractApiErrorMessage(payload, res.statusText);
     } catch {
       detail = res.statusText;
     }

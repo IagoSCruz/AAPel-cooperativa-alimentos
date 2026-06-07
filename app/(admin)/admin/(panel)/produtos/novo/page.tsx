@@ -1,9 +1,8 @@
 import { apiFetch } from "@/lib/api-server";
+import type { Page } from "@/lib/types";
 
 import { ProductForm, CategoryOption, ProducerOption } from "../_form";
 import { createProductAction } from "../actions";
-
-type Page<T> = { data: T[] };
 
 export default async function NovoProdutoPage() {
   const [categories, producers] = await Promise.all([

@@ -2,22 +2,7 @@ import Link from "next/link";
 import { Apple, Plus } from "lucide-react";
 
 import { apiFetch } from "@/lib/api-server";
-
-type Product = {
-  id: string;
-  name: string;
-  price: string;
-  unit: string;
-  stock: number;
-  product_type: "FOOD" | "CRAFT";
-  organic: boolean;
-  premium: boolean;
-  available: boolean;
-  category: { name: string };
-  producer: { name: string };
-};
-
-type Page<T> = { data: T[]; pagination: { total: number } };
+import type { Page, ProductItem as Product } from "@/lib/types";
 
 export default async function ProdutosPage({
   searchParams,

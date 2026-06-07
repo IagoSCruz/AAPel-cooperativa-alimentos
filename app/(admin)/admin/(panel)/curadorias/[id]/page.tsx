@@ -9,6 +9,7 @@
 import { notFound } from "next/navigation";
 
 import { ApiError, apiFetch } from "@/lib/api-server";
+import type { Page } from "@/lib/types";
 import { CurationEditor } from "./editor";
 
 // ----------------------------------------------------------------------------
@@ -57,7 +58,6 @@ export type CurationDetail = {
   slots: CuratedSlot[];
 };
 
-type Page<T> = { data: T[]; pagination: unknown };
 
 // ----------------------------------------------------------------------------
 // Page
