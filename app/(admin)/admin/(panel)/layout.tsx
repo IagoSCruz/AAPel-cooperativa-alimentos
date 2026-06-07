@@ -23,6 +23,9 @@ import {
 import { requireAdmin } from "@/lib/session";
 import { logoutAction } from "../login/actions";
 
+// Admin pages depend on the API + auth — never pre-render at build time.
+export const dynamic = "force-dynamic";
+
 export default async function AdminPanelLayout({
   children,
 }: {
